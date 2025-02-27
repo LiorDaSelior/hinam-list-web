@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class HinamListWebApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(HinamListWebApplication.class, args);
+		SpringApplication.run(HinamListWebConfig.class, args);
 	}
 
 }

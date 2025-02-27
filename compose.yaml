@@ -1,9 +1,16 @@
 services:
-  rabbitmq:
-    container_name: 'rabbit-container'
-    image: 'rabbitmq:latest'
-    environment:
-      - 'RABBITMQ_DEFAULT_PASS=secret'
-      - 'RABBITMQ_DEFAULT_USER=myuser'
+  #rabbitmq:
+  #  container_name: 'rabbit-container'
+  #  image: 'rabbitmq:latest'
+  #  environment:
+  #    - 'RABBITMQ_DEFAULT_PASS=secret'
+  #    - 'RABBITMQ_DEFAULT_USER=myuser'
+  #  ports:
+   #   - '5673:5673'
+
+  redis:
+    container_name: 'redis-container'
+    image: 'redis:latest'
     ports:
-      - '5672:5672'
+      - '6379:6379'
+    restart: always
