@@ -1,4 +1,4 @@
-package com.hinamlist.hinam_list_web.service;
+package com.hinamlist.hinam_list_web.service.algorithm_messenger;
 
 import com.hinamlist.hinam_list_web.model.AlgorithmInput;
 import org.json.JSONObject;
