@@ -13,54 +13,7 @@ import java.util.Map;
 
 @Component
 public class RamiLeviCartScraper extends  AbstractCartScraper {
-
-/*    private String getClearanceCookie() {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless"); // Run in headless mode
-        options.addArguments("--disable-gpu");
-        options.addArguments("--no-sandbox");
-
-        // Initialize the WebDriver
-        WebDriver driver = new ChromeDriver(options);
-
-        try {
-            // Visit the protected website
-            driver.get("https://www.rami-levy.co.il");
-
-            // Wait for Cloudflare challenge to complete
-            // You might need to adjust this timeout
-            Thread.sleep(10000);
-
-            // Get the cf_clearance cookie
-            Cookie cfClearance = driver.manage().getCookieNamed("cf_clearance");
-
-            if (cfClearance != null) {
-                System.out.println("cf_clearance: " + cfClearance.getValue());
-                System.out.println("User-Agent: " + ((JavascriptExecutor) driver).executeScript("return navigator.userAgent"));
-                return cfClearance.getValue();
-            } else {
-                System.out.println("Failed to get cf_clearance cookie");
-                return "";
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            driver.quit();
-        }
-        return "";
-    }*/
-
     public JSONObject getCartObject(Map<Integer, Float> idQuantityMap) throws IOException, InterruptedException, APIResponseException {
-/*        String cfClearance = getClearanceCookie();
-        HttpCookie cookie = new HttpCookie("cf_clearance", cfClearance);
-        try {
-            URI uri = new URI("https://www.rami-levy.co.il");
-            cookieManager.getCookieStore().add(uri, cookie);
-            System.out.println(cookieManager.getCookieStore().getCookies());
-        }
-        catch (Exception _) {}*/
-
         String uriString;
         HttpRequest request;
         String response;

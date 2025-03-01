@@ -1,12 +1,13 @@
 package com.hinamlist.hinam_list_web.service.algorithm_messenger;
 
-import com.hinamlist.hinam_list_web.model.AlgorithmInput;
+import com.hinamlist.hinam_list_web.model.algorithm_messenger.ControllerUserInput;
 import org.json.JSONObject;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -34,18 +35,18 @@ public class AlgorithmMessengerService {
         this.converterExchangeName = converterExchangeName;
     }
 
-    public void sendAlgorithmInput(AlgorithmInput algorithmInput,
+    public void sendAlgorithmInput(ControllerUserInput controllerUserInput,
                                    String sessionId) {
 
         Map<Object, Object> sessionAttrs = redisTemplate.opsForHash().entries(sessionId);
         sessionAttrs.put("algorithm_response", "");
         redisTemplate.opsForHash().putAll(sessionId, sessionAttrs);
 
-        JSONObject jsonBody = createProducerMessageJson(algorithmInput.getStoreNumber(), algorithmInput.getProductAmountMap());
-        String messageBody = jsonBody.toString();
+        //JSONObject jsonBody = createProducerMessageJson(controllerUserInput.getStoreNumber(), controllerUserInput.getProductAmountMap());
+        //String messageBody = jsonBody.toString();
         MessageProperties messageProperties = new MessageProperties();
         messageProperties.setCorrelationId(sessionId);
-        Message message = new Message(messageBody.getBytes(StandardCharsets.UTF_8), messageProperties);
+        Message message = new SimpleMessageConverter().toMessage(controllerUserInput,messageProperties);
 
         rabbitTemplate.convertAndSend(converterExchangeName, "", message);
     }

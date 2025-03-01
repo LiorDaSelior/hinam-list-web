@@ -1,17 +1,18 @@
-package com.hinamlist.hinam_list_web.model;
+package com.hinamlist.hinam_list_web.model.algorithm_messenger;
 
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.util.Map;
 
 @Component
-public class AlgorithmInput {
+public class ControllerUserInput implements Serializable {
     private int storeNumber;
-    private Map<String, Integer> productAmountMap;
+    private Map<String, Float> productAmountMap; // <barcode, quantity>
 
-    public AlgorithmInput() {}
+    public ControllerUserInput() {}
 
-    public AlgorithmInput(int storeNumber, Map<String, Integer> productAmountMap) {
+    public ControllerUserInput(int storeNumber, Map<String, Float> productAmountMap) {
         this.storeNumber = storeNumber;
         this.productAmountMap = productAmountMap;
     }
@@ -24,11 +25,11 @@ public class AlgorithmInput {
         this.storeNumber = storeNumber;
     }
 
-    public Map<String, Integer> getProductAmountMap() {
+    public Map<String, Float> getProductAmountMap() {
         return productAmountMap;
     }
 
-    public void setProductAmountMap(Map<String, Integer> productAmountMap) {
+    public void setProductAmountMap(Map<String, Float> productAmountMap) {
         this.productAmountMap = productAmountMap;
     }
 }

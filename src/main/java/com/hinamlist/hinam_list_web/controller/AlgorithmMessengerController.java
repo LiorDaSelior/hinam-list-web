@@ -1,7 +1,7 @@
 package com.hinamlist.hinam_list_web.controller;
 
 
-import com.hinamlist.hinam_list_web.model.AlgorithmInput;
+import com.hinamlist.hinam_list_web.model.algorithm_messenger.ControllerUserInput;
 import com.hinamlist.hinam_list_web.service.algorithm_messenger.AlgorithmMessengerService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +17,9 @@ public class AlgorithmMessengerController {
     }
 
     @PostMapping("/request")
-    public ResponseEntity<String> requestAlgorithm(@RequestBody AlgorithmInput algorithmInput,
+    public ResponseEntity<String> requestAlgorithm(@RequestBody ControllerUserInput controllerUserInput,
                                                    HttpSession session) {
-        service.sendAlgorithmInput(algorithmInput, session.getId());
+        service.sendAlgorithmInput(controllerUserInput, session.getId());
         return ResponseEntity.ok("Please await result...");
     }
 
