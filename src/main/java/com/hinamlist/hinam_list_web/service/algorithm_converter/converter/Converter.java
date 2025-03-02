@@ -38,7 +38,7 @@ public class Converter {
         this.cartReaderMap = cartReaderMap;
     }
 
-    public void convertAndPassUserInput(ControllerUserInput controllerUserInput) throws IOException, InterruptedException, APIResponseException {
+    public void convertAndSendUserInput(ControllerUserInput controllerUserInput) throws IOException, InterruptedException, APIResponseException {
         List<String> barcodeList = new ArrayList<>(controllerUserInput.getProductAmountMap().keySet());
         Map<Integer, List<Float>> storeNumberPriceListMap = new HashMap<>();
 
