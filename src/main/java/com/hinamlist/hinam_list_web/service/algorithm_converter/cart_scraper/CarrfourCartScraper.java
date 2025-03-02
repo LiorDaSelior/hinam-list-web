@@ -42,9 +42,7 @@ public class CarrfourCartScraper extends AbstractCartScraper {
         bodyMap.put("lines", array);
 
         request = createHttpPostRequest(uriString, headers, bodyMap);
-        response = getResponse(request);
-        //System.out.println("Init res: " + response);
-        //System.out.println("Init headers: " + cookieManager.getCookieStore().getCookies());
+        response = getResponse(request);;
         return new JSONObject(response).getJSONObject("cart");
     }
 }

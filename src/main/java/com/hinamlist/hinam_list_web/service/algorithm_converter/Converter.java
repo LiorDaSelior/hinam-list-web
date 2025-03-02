@@ -1,6 +1,5 @@
-package com.hinamlist.hinam_list_web.service.algorithm_converter.converter;
+package com.hinamlist.hinam_list_web.service.algorithm_converter;
 
-import com.hinamlist.hinam_list_web.model.algorithm_converter.translator.MainTableProduct;
 import com.hinamlist.hinam_list_web.model.algorithm_messenger.ControllerUserInput;
 import com.hinamlist.hinam_list_web.service.algorithm_converter.cart_reader.ICartReader;
 import com.hinamlist.hinam_list_web.service.algorithm_converter.cart_scraper.ICartScraper;

@@ -35,7 +35,6 @@ public class RamiLeviCartScraper extends  AbstractCartScraper {
                 LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "T00:00:00.000Z");
         bodyMap.put("meta",
                 JSONObject.NULL);
-        System.out.println(bodyMap.entrySet());
         request = createHttpPostRequest(uriString, headers, bodyMap);
         response = getResponse(request);
         return new JSONObject(response);

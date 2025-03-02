@@ -37,7 +37,7 @@ public class HaziHinamCartScraper extends AbstractCartScraper {
 
         }
 
-    public void addCartItem(int id, float quantity) throws IOException, InterruptedException, APIResponseException {
+    protected void addCartItem(int id, float quantity) throws IOException, InterruptedException, APIResponseException {
         String uriString;
         HttpRequest request;
         Map<String, String> headers = new HashMap<>();
