@@ -1,6 +1,6 @@
 package com.hinamlist.hinam_list_web.service.algorithm_converter.translator;
 
-import com.hinamlist.hinam_list_web.model.algorithm_converter.translator.MainTableProduct;
+import com.hinamlist.hinam_list_web.model.algorithm_converter.MainTableProduct;
 import com.hinamlist.hinam_list_web.model.algorithm_messenger.ControllerUserInput;
 import com.hinamlist.hinam_list_web.repository.algorithm_converter.MainTableRepository;
 import org.springframework.beans.factory.annotation.Autowired;

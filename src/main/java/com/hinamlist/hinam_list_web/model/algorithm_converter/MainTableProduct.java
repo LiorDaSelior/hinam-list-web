@@ -1,4 +1,4 @@
-package com.hinamlist.hinam_list_web.model.algorithm_converter.translator;
+package com.hinamlist.hinam_list_web.model.algorithm_converter;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

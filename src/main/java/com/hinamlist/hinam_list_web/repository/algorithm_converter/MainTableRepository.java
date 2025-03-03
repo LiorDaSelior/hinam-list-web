@@ -1,7 +1,7 @@
 package com.hinamlist.hinam_list_web.repository.algorithm_converter;
 
-import com.hinamlist.hinam_list_web.model.algorithm_converter.translator.MainTableProduct;
-import com.hinamlist.hinam_list_web.model.algorithm_converter.translator.StoreNumberBarcodeKey;
+import com.hinamlist.hinam_list_web.model.algorithm_converter.MainTableProduct;
+import com.hinamlist.hinam_list_web.model.algorithm_converter.StoreNumberBarcodeKey;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
