@@ -1,5 +1,6 @@
 package com.hinamlist.hinam_list_web.service.algorithm_messenger;
 
+import com.hinamlist.hinam_list_web.model.algorithm_messenger.AlgorithmOutput;
 import com.hinamlist.hinam_list_web.model.algorithm_messenger.ControllerUserInput;
 import org.json.JSONObject;
 import org.springframework.amqp.core.Message;
@@ -59,11 +60,12 @@ public class AlgorithmMessenger {
 
     @RabbitHandler
     public void receiveAlgorithmOutput(Message message) {
+        AlgorithmOutput algorithmOutput = (AlgorithmOutput) new SimpleMessageConverter().fromMessage(message);
         MessageProperties messageProperties = message.getMessageProperties();
         String sessionId = messageProperties.getCorrelationId();
 
         Map<Object, Object> sessionAttrs = redisTemplate.opsForHash().entries(sessionId);
-        sessionAttrs.put("algorithm_response", message);
+        sessionAttrs.put("algorithm_response", algorithmOutput);
         redisTemplate.opsForHash().putAll(sessionId, sessionAttrs);
     }
 
