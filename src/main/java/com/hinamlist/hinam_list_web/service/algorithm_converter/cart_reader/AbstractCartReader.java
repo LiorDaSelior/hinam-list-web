@@ -10,10 +10,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class AbstractCartReader implements ICartReader{
-
+    public final float priceNotFoundValue;
     protected abstract JSONArray getProductJsonArray(JSONObject cartJsonObject);
     protected abstract int getProductId(JSONObject productJsonObject);
     protected abstract float getProductPrice(JSONObject productJsonObject);
+
+    public AbstractCartReader(float priceNotFoundValue) {
+        this.priceNotFoundValue = priceNotFoundValue;
+    }
 
     private Stream<JSONObject> getStreamFromJsonArray(JSONArray jsonArray) {
         List<JSONObject> jsonObjectList = new ArrayList<>();

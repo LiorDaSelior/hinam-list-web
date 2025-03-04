@@ -14,7 +14,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Map;
 
-@Component
 public abstract class AbstractCartScraper implements ICartScraper {
     protected HttpClient client;
     protected CookieManager cookieManager;

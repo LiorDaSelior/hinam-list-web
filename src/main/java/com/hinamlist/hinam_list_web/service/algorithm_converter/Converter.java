@@ -17,8 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Converter {
-    public final float priceNotFoundValue = -1.0f;
-
+    public final float priceNotFoundValue;
     protected final Map<Integer, String> storeNumberNameMap;
     protected final Translator translator;
     protected final Map<String, ICartScraper> cartScraperMap;
@@ -26,11 +25,15 @@ public class Converter {
     // TODO: add queues support, cart readers, test translator
     @Autowired
     public Converter(
+            @Value("${store.price-not-found-value}") float priceNotFoundValue,
             @Value("#{${store.map}}") Map<Integer, String> storeNumberNameMap,
+            @Value("#{${store.lower-limit-map}}") Map<Integer, Float> storeNumberLowerLimitMap,
+            @Value("#{${store.addon-map}}") Map<Integer, Float> storeNumberOrderAddonMap,
             Map<String, ICartScraper> cartScraperMap,
             Map<String, ICartReader> cartReaderMap,
             Translator translator
     ) {
+        this.priceNotFoundValue = priceNotFoundValue;
         this.storeNumberNameMap = storeNumberNameMap;
         this.translator = translator;
         this.cartScraperMap = cartScraperMap;
