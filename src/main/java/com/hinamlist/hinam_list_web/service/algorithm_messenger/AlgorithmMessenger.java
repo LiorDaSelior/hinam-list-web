@@ -14,21 +14,19 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Service
 @RabbitListener(queues = "${rabbitmq.algorithm-consumer.queue}")
-public class AlgorithmMessengerService {
-    protected static int counter = 0;
+public class AlgorithmMessenger {
     protected RabbitTemplate rabbitTemplate;
     protected RedisTemplate<String, Object> redisTemplate;
     protected String converterExchangeName;
 
     @Autowired
-    public AlgorithmMessengerService(RabbitTemplate rabbitTemplate,
-                                     RedisTemplate<String, Object> redisTemplate,
-                                     @Value("${rabbitmq.converter.exchange}") String converterExchangeName
+    public AlgorithmMessenger(RabbitTemplate rabbitTemplate,
+                              RedisTemplate<String, Object> redisTemplate,
+                              @Value("${rabbitmq.converter.exchange}") String converterExchangeName
     ) {
         this.rabbitTemplate = rabbitTemplate;
         this.redisTemplate = redisTemplate;

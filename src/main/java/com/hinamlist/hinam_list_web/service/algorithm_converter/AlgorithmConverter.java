@@ -1,13 +1,21 @@
 package com.hinamlist.hinam_list_web.service.algorithm_converter;
 
+import com.hinamlist.hinam_list_web.model.algorithm_converter.AlgorithmInput;
 import com.hinamlist.hinam_list_web.model.algorithm_messenger.ControllerUserInput;
 import com.hinamlist.hinam_list_web.service.algorithm_converter.cart_reader.ICartReader;
 import com.hinamlist.hinam_list_web.service.algorithm_converter.cart_scraper.ICartScraper;
 import com.hinamlist.hinam_list_web.service.algorithm_converter.cart_scraper.exception.APIResponseException;
 import com.hinamlist.hinam_list_web.service.algorithm_converter.translator.Translator;
 import org.json.JSONObject;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.rabbit.annotation.RabbitHandler;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,21 +24,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Converter {
+@Service
+@RabbitListener(queues = "${rabbitmq.converter.queue}")
+public class AlgorithmConverter {
+
     public final float priceNotFoundValue;
     protected final Map<Integer, String> storeNumberNameMap;
     protected final Map<Integer, Float> storeNumberLowerLimitMap;
     protected final Map<Integer, Float> storeNumberOrderAddonMap;
+
     protected final Translator translator;
     protected final Map<String, ICartScraper> cartScraperMap;
     protected final Map<String, ICartReader> cartReaderMap;
+
+    protected RabbitTemplate rabbitTemplate;
+    protected final String algorithmProducerExchangeName;
+
     // TODO: add queues support, cart readers, test translator
     @Autowired
-    public Converter(
+    public AlgorithmConverter(
             @Value("${store.price-not-found-value}") float priceNotFoundValue,
             @Value("#{${store.map}}") Map<Integer, String> storeNumberNameMap,
             @Value("#{${store.lower-limit-map}}") Map<Integer, Float> storeNumberLowerLimitMap,
             @Value("#{${store.addon-map}}") Map<Integer, Float> storeNumberOrderAddonMap,
+            @Value("${algorithm-producer-exchange}") String algorithmProducerExchangeName,
+            RabbitTemplate rabbitTemplate,
             Map<String, ICartScraper> cartScraperMap,
             Map<String, ICartReader> cartReaderMap,
             Translator translator
@@ -39,12 +57,19 @@ public class Converter {
         this.storeNumberNameMap = storeNumberNameMap;
         this.storeNumberLowerLimitMap = storeNumberLowerLimitMap;
         this.storeNumberOrderAddonMap = storeNumberOrderAddonMap;
+
+        this.rabbitTemplate = rabbitTemplate;
+        this.algorithmProducerExchangeName = algorithmProducerExchangeName;
+
         this.translator = translator;
         this.cartScraperMap = cartScraperMap;
         this.cartReaderMap = cartReaderMap;
     }
 
-    public void convertAndSendUserInput(ControllerUserInput controllerUserInput) throws IOException, InterruptedException, APIResponseException {
+    @RabbitHandler
+    public void convertAndSendUserInput(Message message) throws IOException, InterruptedException, APIResponseException {
+        ControllerUserInput controllerUserInput = (ControllerUserInput) new SimpleMessageConverter().fromMessage(message);
+
         List<String> barcodeList = new ArrayList<>(controllerUserInput.getProductAmountMap().keySet());
         Map<Integer, List<Float>> storeNumberPriceListMap = new HashMap<>();
 
@@ -87,8 +112,11 @@ public class Converter {
             storeNumberPriceListMap.put(storeNumber, priceList);
         }
 
-        // pass barcodeList, storeNumberPriceListMap to algorithm using rabbit
+        AlgorithmInput algorithmInput = new AlgorithmInput(barcodeList, storeNumberPriceListMap, storeNumberLowerLimitMap, storeNumberOrderAddonMap);
+        MessageProperties messageProperties = message.getMessageProperties();
+        Message algorithmMessage = new SimpleMessageConverter().toMessage(algorithmInput,messageProperties);
 
+        rabbitTemplate.convertAndSend(algorithmProducerExchangeName, "", algorithmMessage);
     }
 
 }

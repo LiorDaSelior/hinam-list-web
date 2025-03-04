@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.util.Map;
 
-@Component
+
 public class ControllerUserInput implements Serializable {
     private int storeNumber;
     private Map<String, Float> productAmountMap; // <barcode, quantity>

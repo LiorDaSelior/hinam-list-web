@@ -2,7 +2,7 @@ package com.hinamlist.hinam_list_web.controller;
 
 
 import com.hinamlist.hinam_list_web.model.algorithm_messenger.ControllerUserInput;
-import com.hinamlist.hinam_list_web.service.algorithm_messenger.AlgorithmMessengerService;
+import com.hinamlist.hinam_list_web.service.algorithm_messenger.AlgorithmMessenger;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 public class AlgorithmMessengerController {
 
-    AlgorithmMessengerService service;
+    AlgorithmMessenger service;
 
-    public AlgorithmMessengerController(AlgorithmMessengerService service) {
+    public AlgorithmMessengerController(AlgorithmMessenger service) {
         this.service = service;
     }
 
