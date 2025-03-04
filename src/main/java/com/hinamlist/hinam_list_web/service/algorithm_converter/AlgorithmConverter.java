@@ -37,7 +37,7 @@ public class AlgorithmConverter {
     protected final Map<String, ICartScraper> cartScraperMap;
     protected final Map<String, ICartReader> cartReaderMap;
 
-    protected RabbitTemplate rabbitTemplate;
+    protected final RabbitTemplate rabbitTemplate;
     protected final String algorithmProducerExchangeName;
 
     // TODO: add queues support, cart readers, test translator
@@ -47,7 +47,7 @@ public class AlgorithmConverter {
             @Value("#{${store.map}}") Map<Integer, String> storeNumberNameMap,
             @Value("#{${store.lower-limit-map}}") Map<Integer, Float> storeNumberLowerLimitMap,
             @Value("#{${store.addon-map}}") Map<Integer, Float> storeNumberOrderAddonMap,
-            @Value("${algorithm-producer-exchange}") String algorithmProducerExchangeName,
+            @Value("${rabbitmq.algorithm-producer.exchange}") String algorithmProducerExchangeName,
             RabbitTemplate rabbitTemplate,
             Map<String, ICartScraper> cartScraperMap,
             Map<String, ICartReader> cartReaderMap,
