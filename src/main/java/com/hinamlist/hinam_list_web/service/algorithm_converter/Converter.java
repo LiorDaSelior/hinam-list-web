@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 public class Converter {
     public final float priceNotFoundValue;
     protected final Map<Integer, String> storeNumberNameMap;
+    protected final Map<Integer, Float> storeNumberLowerLimitMap;
+    protected final Map<Integer, Float> storeNumberOrderAddonMap;
     protected final Translator translator;
     protected final Map<String, ICartScraper> cartScraperMap;
     protected final Map<String, ICartReader> cartReaderMap;
@@ -35,6 +37,8 @@ public class Converter {
     ) {
         this.priceNotFoundValue = priceNotFoundValue;
         this.storeNumberNameMap = storeNumberNameMap;
+        this.storeNumberLowerLimitMap = storeNumberLowerLimitMap;
+        this.storeNumberOrderAddonMap = storeNumberOrderAddonMap;
         this.translator = translator;
         this.cartScraperMap = cartScraperMap;
         this.cartReaderMap = cartReaderMap;
