@@ -1,5 +1,6 @@
 package com.hinamlist.hinam_list_web.service;
 
+import org.springframework.amqp.AmqpConnectException;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
@@ -27,7 +28,13 @@ public class RabbitConfig {
     @Qualifier("${rabbitmq.algorithm-producer.queue}")
     Queue AlgorithmProducerQueue(@Value("${rabbitmq.algorithm-producer.queue}")  String collectorQueueName,
                                  RabbitAdmin admin) {
-        admin.purgeQueue(collectorQueueName);
+/*        try {
+            admin.getQueueProperties(collectorQueueName);
+            admin.purgeQueue(collectorQueueName);
+        }
+        catch (AmqpConnectException _) {
+
+        }*/
         return new Queue(collectorQueueName);
     }
 
@@ -47,7 +54,13 @@ public class RabbitConfig {
     @Qualifier("${rabbitmq.algorithm-consumer.queue}")
     Queue AlgorithmConsumerQueue(@Value("${rabbitmq.algorithm-consumer.queue}")  String collectorQueueName,
                                  RabbitAdmin admin) {
-        admin.purgeQueue(collectorQueueName);
+/*        try {
+            admin.getQueueProperties(collectorQueueName);
+            admin.purgeQueue(collectorQueueName);
+        }
+        catch (AmqpConnectException _) {
+
+        }*/
         return new Queue(collectorQueueName);
     }
 
@@ -67,7 +80,13 @@ public class RabbitConfig {
     @Qualifier("${rabbitmq.converter.queue}")
     Queue ConverterQueue(@Value("${rabbitmq.converter.queue}")  String collectorQueueName,
                          RabbitAdmin admin) {
-        admin.purgeQueue(collectorQueueName);
+/*        try {
+            admin.getQueueProperties(collectorQueueName);
+            admin.purgeQueue(collectorQueueName);
+        }
+        catch (AmqpConnectException _) {
+
+        }*/
         return new Queue(collectorQueueName);
     }
 

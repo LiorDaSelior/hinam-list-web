@@ -1,11 +1,9 @@
 package com.hinamlist.hinam_list_web.service.algorithm_messenger;
 
-import com.hinamlist.hinam_list_web.model.algorithm_messenger.AlgorithmOutput;
 import com.hinamlist.hinam_list_web.model.algorithm_messenger.ControllerUserInput;
 import org.json.JSONObject;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageProperties;
-import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.SimpleMessageConverter;
@@ -74,13 +72,16 @@ public class AlgorithmMessenger {
 
     public ResponseEntity<String> getAlgorithmResult(String sessionId) {
         Map<Object, Object> sessionAttrs = redisTemplate.opsForHash().entries(sessionId);
-        String res = sessionAttrs.get("algorithm_response").toString();
-        if (res == null) {
+        var result = sessionAttrs.get("algorithm_response");
+        if (result == null) {
             return ResponseEntity.status(404).body("No request found!");
         }
-        else if (res.isEmpty()) {
+        String resultString = sessionAttrs.get("algorithm_response").toString();
+        if (resultString.isEmpty()) {
             return ResponseEntity.status(204).body("Please await result...");
         }
-        return ResponseEntity.ok(res);
+        Map<String, Integer> resultObject = (Map<String, Integer>) sessionAttrs.get("algorithm_response");
+        String resultJsonString = new JSONObject(resultObject).toString();
+        return ResponseEntity.ok(resultJsonString);
     }
 }
