@@ -12,6 +12,7 @@ import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.SimpleMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@RabbitListener(queues = "${rabbitmq.converter.queue}")
+
 public class AlgorithmConverter {
 
     public final float priceNotFoundValue;
@@ -37,6 +38,7 @@ public class AlgorithmConverter {
     protected final Map<String, ICartScraper> cartScraperMap;
     protected final Map<String, ICartReader> cartReaderMap;
 
+    protected final SimpleMessageConverter messageConverter;
     protected final RabbitTemplate rabbitTemplate;
     protected final String algorithmProducerExchangeName;
 
@@ -49,6 +51,7 @@ public class AlgorithmConverter {
             @Value("#{${store.addon-map}}") Map<Integer, Float> storeNumberOrderAddonMap,
             @Value("${rabbitmq.algorithm-producer.exchange}") String algorithmProducerExchangeName,
             RabbitTemplate rabbitTemplate,
+            SimpleMessageConverter messageConverter,
             Map<String, ICartScraper> cartScraperMap,
             Map<String, ICartReader> cartReaderMap,
             Translator translator
@@ -60,15 +63,16 @@ public class AlgorithmConverter {
 
         this.rabbitTemplate = rabbitTemplate;
         this.algorithmProducerExchangeName = algorithmProducerExchangeName;
+        this.messageConverter = messageConverter;
 
         this.translator = translator;
         this.cartScraperMap = cartScraperMap;
         this.cartReaderMap = cartReaderMap;
     }
 
-    @RabbitHandler
+    @RabbitListener(queues = "${rabbitmq.converter.queue}")
     public void convertAndSendUserInput(Message message) throws IOException, InterruptedException, APIResponseException {
-        ControllerUserInput controllerUserInput = (ControllerUserInput) new SimpleMessageConverter().fromMessage(message);
+        ControllerUserInput controllerUserInput = (ControllerUserInput) messageConverter.fromMessage(message);
 
         List<String> barcodeList = new ArrayList<>(controllerUserInput.getProductAmountMap().keySet());
         Map<Integer, List<Float>> storeNumberPriceListMap = new HashMap<>();
@@ -91,6 +95,7 @@ public class AlgorithmConverter {
                     );
 
             // Using cart scraper, get the cart JSON object with the relevant products (by StoreId) from the store API
+            //System.out.println(cartScraperMap.keySet());
             String cartScraperName = storeNumberNameMap.get(storeNumber) + "CartScraper";
             JSONObject cartJson = cartScraperMap.get(cartScraperName).getCartObject(storeIdQuantityMap);
 
@@ -104,9 +109,9 @@ public class AlgorithmConverter {
             List<Float> priceList = barcodeList.stream()
                     // Again, some barcodes might not be present in the store so they don't have a price, they get some default value (priceNotFoundValue)
                     .map(barcode -> (
-                            (barcodeStoreIdMap.containsKey(barcode)) ?
+                            (barcodeStoreIdMap.containsKey(barcode) && storeIdPriceMap.containsKey(barcodeStoreIdMap.get(barcode)) ?
                             storeIdPriceMap.get(barcodeStoreIdMap.get(barcode)) : priceNotFoundValue)
-                    )
+                    ))
                     .toList();
 
             storeNumberPriceListMap.put(storeNumber, priceList);
@@ -114,7 +119,7 @@ public class AlgorithmConverter {
 
         AlgorithmInput algorithmInput = new AlgorithmInput(barcodeList, storeNumberPriceListMap, storeNumberLowerLimitMap, storeNumberOrderAddonMap);
         MessageProperties messageProperties = message.getMessageProperties();
-        Message algorithmMessage = new SimpleMessageConverter().toMessage(algorithmInput,messageProperties);
+        Message algorithmMessage = new Jackson2JsonMessageConverter().toMessage(algorithmInput,messageProperties);
 
         rabbitTemplate.convertAndSend(algorithmProducerExchangeName, "", algorithmMessage);
     }

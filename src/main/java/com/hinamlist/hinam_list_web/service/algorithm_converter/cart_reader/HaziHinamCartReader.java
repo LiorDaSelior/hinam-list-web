@@ -1,6 +1,7 @@
 package com.hinamlist.hinam_list_web.service.algorithm_converter.cart_reader;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,14 @@ public class HaziHinamCartReader extends AbstractCartReader {
 
     @Override
     protected JSONArray getProductJsonArray(JSONObject cartJsonObject) {
-        return cartJsonObject.getJSONArray("Items");
+        JSONArray result;
+        try {
+            result = cartJsonObject.getJSONObject("CartItems").getJSONArray("Items");
+        }
+        catch (JSONException jsonEx) {
+            result = new JSONArray();
+        }
+        return  result;
     }
 
     @Override

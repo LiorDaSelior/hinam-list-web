@@ -18,20 +18,23 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 @Service
-@RabbitListener(queues = "${rabbitmq.algorithm-consumer.queue}")
+
 public class AlgorithmMessenger {
     protected RabbitTemplate rabbitTemplate;
     protected RedisTemplate<String, Object> redisTemplate;
     protected String converterExchangeName;
+    protected final SimpleMessageConverter messageConverter;
 
     @Autowired
     public AlgorithmMessenger(RabbitTemplate rabbitTemplate,
                               RedisTemplate<String, Object> redisTemplate,
-                              @Value("${rabbitmq.converter.exchange}") String converterExchangeName
+                              @Value("${rabbitmq.converter.exchange}") String converterExchangeName,
+                              SimpleMessageConverter messageConverter
     ) {
         this.rabbitTemplate = rabbitTemplate;
         this.redisTemplate = redisTemplate;
         this.converterExchangeName = converterExchangeName;
+        this.messageConverter = messageConverter;
     }
 
     public void sendAlgorithmInput(ControllerUserInput controllerUserInput,
@@ -58,9 +61,9 @@ public class AlgorithmMessenger {
         return jsonMessage;
     }
 
-    @RabbitHandler
+    @RabbitListener(queues = "${rabbitmq.algorithm-consumer.queue}")
     public void receiveAlgorithmOutput(Message message) {
-        AlgorithmOutput algorithmOutput = (AlgorithmOutput) new SimpleMessageConverter().fromMessage(message);
+        Map<String, Integer> algorithmOutput = (Map<String, Integer>) messageConverter.fromMessage(message);
         MessageProperties messageProperties = message.getMessageProperties();
         String sessionId = messageProperties.getCorrelationId();
 
@@ -71,7 +74,7 @@ public class AlgorithmMessenger {
 
     public ResponseEntity<String> getAlgorithmResult(String sessionId) {
         Map<Object, Object> sessionAttrs = redisTemplate.opsForHash().entries(sessionId);
-        String res = (String) sessionAttrs.get("algorithm_response");;
+        String res = sessionAttrs.get("algorithm_response").toString();
         if (res == null) {
             return ResponseEntity.status(404).body("No request found!");
         }

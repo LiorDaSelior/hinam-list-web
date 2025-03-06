@@ -4,10 +4,16 @@ import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
+import org.springframework.amqp.support.converter.SimpleMessageConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class RabbitConfig {
@@ -19,7 +25,9 @@ public class RabbitConfig {
 
     @Bean
     @Qualifier("${rabbitmq.algorithm-producer.queue}")
-    Queue AlgorithmProducerQueue(@Value("${rabbitmq.algorithm-producer.queue}")  String collectorQueueName) {
+    Queue AlgorithmProducerQueue(@Value("${rabbitmq.algorithm-producer.queue}")  String collectorQueueName,
+                                 RabbitAdmin admin) {
+        admin.purgeQueue(collectorQueueName);
         return new Queue(collectorQueueName);
     }
 
@@ -37,7 +45,9 @@ public class RabbitConfig {
 
     @Bean
     @Qualifier("${rabbitmq.algorithm-consumer.queue}")
-    Queue AlgorithmConsumerQueue(@Value("${rabbitmq.algorithm-consumer.queue}")  String collectorQueueName) {
+    Queue AlgorithmConsumerQueue(@Value("${rabbitmq.algorithm-consumer.queue}")  String collectorQueueName,
+                                 RabbitAdmin admin) {
+        admin.purgeQueue(collectorQueueName);
         return new Queue(collectorQueueName);
     }
 
@@ -55,7 +65,9 @@ public class RabbitConfig {
 
     @Bean
     @Qualifier("${rabbitmq.converter.queue}")
-    Queue ConverterQueue(@Value("${rabbitmq.converter.queue}")  String collectorQueueName) {
+    Queue ConverterQueue(@Value("${rabbitmq.converter.queue}")  String collectorQueueName,
+                         RabbitAdmin admin) {
+        admin.purgeQueue(collectorQueueName);
         return new Queue(collectorQueueName);
     }
 
@@ -63,5 +75,18 @@ public class RabbitConfig {
     public Binding ConverterBinding(@Qualifier("${rabbitmq.converter.exchange}")DirectExchange collectorExchange,
                                             @Qualifier("${rabbitmq.converter.queue}")Queue collectorQueue) {
         return BindingBuilder.bind(collectorQueue).to(collectorExchange).with("");
+    }
+
+    @Bean("trustedConverter")
+    public SimpleMessageConverter messageConverter() {
+        SimpleMessageConverter converter = new SimpleMessageConverter();
+        converter.setAllowedListPatterns(List.of("com.hinamlist.hinam_list_web.model.*", "java.util.*"));
+        return converter;
+    }
+
+    @Bean
+    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+        RabbitAdmin admin = new RabbitAdmin(connectionFactory);
+        return admin;
     }
 }
